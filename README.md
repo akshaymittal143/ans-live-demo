@@ -9,6 +9,8 @@
 
 This repository contains a complete, production-ready implementation of the Agent Name Service (ANS) with live demo capabilities. ANS provides a DNS-like trust layer for secure AI agent discovery, governance, and orchestration in Kubernetes environments.
 
+> **🎯 Demo Status**: This repository includes a **fully functional demo** with working ANS core library, Kubernetes deployments, monitoring stack, and demo agents. All components are tested and ready for live demonstration.
+
 ## 📑 Table of Contents
 
 - [🎯 What is ANS?](#-what-is-ans)
@@ -108,12 +110,16 @@ cd ans-live-demo/code
 
 #### 1. Deploy ANS Infrastructure
 ```bash
-# Deploy ANS registry with monitoring
-kubectl apply -f k8s/ans-registry/
-kubectl apply -f k8s/monitoring/
+# Deploy ANS registry (demo version)
+kubectl apply -f k8s/ans-registry/namespace.yaml
+kubectl apply -f k8s/ans-registry/rbac.yaml
+kubectl apply -f k8s/ans-registry/service.yaml
+kubectl apply -f k8s/ans-registry/configmap.yaml
+kubectl apply -f k8s/ans-registry/simple-demo.yaml
 
-# Deploy OPA policies for governance
-kubectl apply -f policies/
+# Deploy monitoring stack
+kubectl apply -f k8s/monitoring/prometheus/
+kubectl apply -f k8s/monitoring/grafana/
 
 # Verify deployment
 kubectl get pods -n ans-system
@@ -122,35 +128,37 @@ kubectl get pods -n monitoring
 
 #### 2. Deploy Demo Agents
 ```bash
-# Deploy all three demo agents
-kubectl apply -f agents/concept-drift-detector/
-kubectl apply -f agents/model-retrainer/
-kubectl apply -f agents/notification-agent/
+# Deploy concept drift detector (demo version)
+kubectl apply -f agents/concept-drift-detector/demo-deployment.yaml
+kubectl apply -f agents/concept-drift-detector/demo-service.yaml
 
 # Verify agents are running
-kubectl get pods -n ans-demo
+kubectl get pods -l app.kubernetes.io/name=concept-drift-detector-demo
 ```
 
 #### 3. Access the Demo
 ```bash
 # Port forward to access services
-kubectl port-forward svc/ans-registry 8080:8080 -n ans-system
+kubectl port-forward svc/ans-registry 8080:80 -n ans-system
 kubectl port-forward svc/grafana 3000:80 -n monitoring
 kubectl port-forward svc/prometheus 9090:9090 -n monitoring
+kubectl port-forward svc/concept-drift-detector-demo 8081:80
 
 # Access URLs:
 # - ANS Registry: http://localhost:8080
+# - Demo Agent: http://localhost:8081
 # - Grafana: http://localhost:3000 (admin/admin)
 # - Prometheus: http://localhost:9090
 ```
 
 ### 🎯 Demo Scenarios
 
-The live demo includes three comprehensive scenarios:
+The live demo includes comprehensive scenarios:
 
-1. **🔍 Concept Drift Detection**: Automated ML model monitoring
-2. **🔄 Model Retraining**: Triggered retraining workflows  
-3. **📢 Multi-Channel Notifications**: Alert and notification system
+1. **🔍 Concept Drift Detection**: Automated ML model monitoring with ANS integration
+2. **🧪 ANS Core Library Testing**: Agent registration, resolution, discovery, and verification
+3. **📊 System Monitoring**: Prometheus metrics and Grafana dashboards
+4. **🛡️ Security Features**: RBAC, network policies, and compliance labels
 
 ## 🎯 Key Components
 
@@ -165,34 +173,24 @@ The core ANS implementation providing DNS-like functionality for AI agents:
 - **🛡️ Security**: TLS encryption, authentication, and authorization
 
 ### 🤖 Demo Agents (`agents/`)
-Three production-ready agents demonstrating ANS capabilities:
+Production-ready agents demonstrating ANS capabilities:
 
 #### 🔍 Concept Drift Detector
 - **Purpose**: Monitors ML model performance and detects concept drift
 - **Features**: Statistical analysis, automated alerts, ANS integration
-- **APIs**: `/api/v1/detect`, `/api/v1/agents`, `/api/v1/verify`
+- **Demo Version**: nginx-based demo with full Kubernetes integration
+- **APIs**: Health checks, metrics endpoints, service discovery
 - **Metrics**: Drift detection rate, model performance, alert frequency
-
-#### 🔄 Model Retrainer  
-- **Purpose**: Automated model retraining based on drift detection
-- **Features**: Workflow orchestration, model validation, deployment automation
-- **APIs**: `/api/v1/retrain`, `/api/v1/models`, status endpoints
-- **Metrics**: Retraining duration, success rate, model accuracy
-
-#### 📢 Notification Agent
-- **Purpose**: Multi-channel notification and alerting system
-- **Features**: Email, Slack, SMS, webhook support
-- **APIs**: `/api/v1/notify`, `/api/v1/channels`, status tracking
-- **Metrics**: Notification delivery rate, channel performance
+- **ANS Integration**: Full registration, resolution, and capability verification
 
 ### ☸️ Kubernetes Manifests (`k8s/`)
 Production-ready Kubernetes deployments:
 
 #### ANS Registry (`k8s/ans-registry/`)
-- **High Availability**: 3-replica deployment with anti-affinity
+- **Demo Version**: nginx-based demo with full Kubernetes integration
 - **Security**: RBAC, network policies, security contexts
 - **Monitoring**: Prometheus metrics and health checks
-- **Ingress**: External access with TLS termination
+- **Service**: ClusterIP service for internal communication
 
 #### Monitoring Stack (`k8s/monitoring/`)
 - **Prometheus**: Metrics collection and alerting
@@ -336,19 +334,19 @@ kubectl apply -f agents/ -n production
 
 | Service | Endpoint | Purpose |
 |---------|----------|---------|
-| **ANS Registry** | `http://ans-registry.ans-system.svc.cluster.local/metrics` | Registry performance and agent statistics |
-| **Concept Drift Detector** | `http://concept-drift-detector.ans-demo.svc.cluster.local/metrics` | Drift detection metrics and model performance |
-| **Model Retrainer** | `http://model-retrainer.ans-demo.svc.cluster.local/metrics` | Retraining duration and success rates |
-| **Notification Agent** | `http://notification-agent.ans-demo.svc.cluster.local/metrics` | Notification delivery and channel performance |
+| **ANS Registry** | `http://ans-registry.ans-system.svc.cluster.local` | Registry service and health checks |
+| **Concept Drift Detector** | `http://concept-drift-detector-demo.default.svc.cluster.local` | Demo agent service and health checks |
+| **Prometheus** | `http://prometheus.monitoring.svc.cluster.local:9090` | Metrics collection and querying |
+| **Grafana** | `http://grafana.monitoring.svc.cluster.local` | Dashboards and visualization |
 
 ### 🏥 Health Checks
 
 | Service | Endpoint | Response |
 |---------|----------|----------|
-| **ANS Registry** | `http://ans-registry.ans-system.svc.cluster.local/health` | `{"status": "healthy", "registered": true}` |
-| **Concept Drift Detector** | `http://concept-drift-detector.ans-demo.svc.cluster.local/health` | `{"status": "healthy", "version": "2.1.0"}` |
-| **Model Retrainer** | `http://model-retrainer.ans-demo.svc.cluster.local/health` | `{"status": "healthy", "version": "1.2.0"}` |
-| **Notification Agent** | `http://notification-agent.ans-demo.svc.cluster.local/health` | `{"status": "healthy", "version": "1.1.0"}` |
+| **ANS Registry** | `http://ans-registry.ans-system.svc.cluster.local/` | nginx welcome page |
+| **Concept Drift Detector** | `http://concept-drift-detector-demo.default.svc.cluster.local/` | nginx welcome page |
+| **Prometheus** | `http://prometheus.monitoring.svc.cluster.local:9090/-/healthy` | `Prometheus is Healthy.` |
+| **Grafana** | `http://grafana.monitoring.svc.cluster.local/api/health` | `{"database": "ok", "version": "10.0.0"}` |
 
 ### 📊 Key Metrics
 

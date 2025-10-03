@@ -63,12 +63,16 @@ create_demo_namespace() {
 deploy_ans_infrastructure() {
     print_status "Deploying ANS infrastructure..."
     
-    # Deploy ANS registry
-    kubectl apply -f k8s/ans-registry/
+    # Deploy ANS registry (demo version)
+    kubectl apply -f k8s/ans-registry/namespace.yaml
+    kubectl apply -f k8s/ans-registry/rbac.yaml
+    kubectl apply -f k8s/ans-registry/service.yaml
+    kubectl apply -f k8s/ans-registry/configmap.yaml
+    kubectl apply -f k8s/ans-registry/simple-demo.yaml
     
     # Wait for ANS registry to be ready
     print_status "Waiting for ANS registry to be ready..."
-    kubectl wait --for=condition=available --timeout=300s deployment/ans-registry -n $ANS_NAMESPACE
+    kubectl wait --for=condition=available --timeout=300s deployment/ans-registry-simple -n $ANS_NAMESPACE
     
     print_success "ANS infrastructure deployed"
 }
@@ -112,20 +116,13 @@ deploy_monitoring() {
 deploy_demo_agents() {
     print_status "Deploying demo agents..."
     
-    # Deploy concept drift detector
-    kubectl apply -f agents/concept-drift-detector/
-    
-    # Deploy model retrainer
-    kubectl apply -f agents/model-retrainer/
-    
-    # Deploy notification agent
-    kubectl apply -f agents/notification-agent/
+    # Deploy concept drift detector (demo version)
+    kubectl apply -f agents/concept-drift-detector/demo-deployment.yaml
+    kubectl apply -f agents/concept-drift-detector/demo-service.yaml
     
     # Wait for agents to be ready
     print_status "Waiting for demo agents to be ready..."
-    kubectl wait --for=condition=available --timeout=300s deployment/concept-drift-detector -n $DEMO_NAMESPACE
-    kubectl wait --for=condition=available --timeout=300s deployment/model-retrainer -n $DEMO_NAMESPACE
-    kubectl wait --for=condition=available --timeout=300s deployment/notification-agent -n $DEMO_NAMESPACE
+    kubectl wait --for=condition=available --timeout=300s deployment/concept-drift-detector-demo
     
     print_success "Demo agents deployed"
 }
@@ -134,25 +131,40 @@ deploy_demo_agents() {
 run_demo_scenarios() {
     print_status "Running demo scenarios..."
     
-    # Scenario 1: Concept Drift Detection
-    print_status "Scenario 1: Concept Drift Detection"
-    kubectl exec -n $DEMO_NAMESPACE deployment/concept-drift-detector -- curl -X POST http://localhost:8080/api/v1/detect \
-        -H "Content-Type: application/json" \
-        -d '{"modelId": "demo-model-1", "dataSource": "demo-data-source-1"}'
+    # Scenario 1: Test ANS Core Library
+    print_status "Scenario 1: Testing ANS Core Library"
+    cd ans && node -e "
+    const { DemoANSClient } = require('./dist/demo-ans.js');
+    async function test() {
+        const client = new DemoANSClient();
+        const metadata = {
+            name: 'concept-drift-detector-demo',
+            version: '2.1.0',
+            capabilities: ['concept-drift-detection'],
+            endpoints: ['http://concept-drift-detector-demo:80'],
+            publicKey: 'demo-key',
+            certificate: 'demo-cert',
+            policies: ['data-privacy']
+        };
+        const reg = await client.registerAgent(metadata);
+        console.log('✅ Agent registered:', reg.ansName);
+        const resolved = await client.resolveAgent(reg.ansName);
+        console.log('✅ Agent resolved:', resolved.name);
+    }
+    test().catch(console.error);
+    " && cd ..
     
-    sleep 5
+    sleep 2
     
-    # Scenario 2: Agent Discovery
-    print_status "Scenario 2: Agent Discovery"
-    kubectl exec -n $DEMO_NAMESPACE deployment/concept-drift-detector -- curl http://localhost:8080/api/v1/agents
+    # Scenario 2: Test Service Connectivity
+    print_status "Scenario 2: Testing Service Connectivity"
+    kubectl exec deployment/concept-drift-detector-demo -- curl -s http://localhost:80 | head -3
     
-    sleep 5
+    sleep 2
     
-    # Scenario 3: Capability Verification
-    print_status "Scenario 3: Capability Verification"
-    kubectl exec -n $DEMO_NAMESPACE deployment/concept-drift-detector -- curl -X POST http://localhost:8080/api/v1/verify \
-        -H "Content-Type: application/json" \
-        -d '{"ansName": "a2a://concept-drift-detector.concept-drift-detection.research-lab.v2.1.prod", "capability": "concept-drift-detection"}'
+    # Scenario 3: Show System Status
+    print_status "Scenario 3: System Status"
+    kubectl get pods --all-namespaces | grep -E "(ans-system|monitoring|concept-drift)"
     
     print_success "Demo scenarios completed"
 }
@@ -164,13 +176,13 @@ show_demo_status() {
     
     # Show ANS registry status
     echo "ANS Registry:"
-    kubectl get pods -n $ANS_NAMESPACE -l app.kubernetes.io/name=ans-registry
+    kubectl get pods -n $ANS_NAMESPACE -l app.kubernetes.io/name=ans-registry-simple
     
     echo ""
     
     # Show demo agents status
     echo "Demo Agents:"
-    kubectl get pods -n $DEMO_NAMESPACE -l app.kubernetes.io/part-of=ans
+    kubectl get pods -l app.kubernetes.io/name=concept-drift-detector-demo
     
     echo ""
     
@@ -184,6 +196,7 @@ show_demo_status() {
     # Show access information
     print_status "Access Information:"
     echo "ANS Registry: http://ans-registry.ans-system.svc.cluster.local"
+    echo "Demo Agent: http://concept-drift-detector-demo.default.svc.cluster.local"
     echo "Grafana: kubectl port-forward svc/grafana 3000:80 -n monitoring"
     echo "Prometheus: kubectl port-forward svc/prometheus 9090:80 -n monitoring"
 }
@@ -193,13 +206,11 @@ cleanup_demo() {
     print_status "Cleaning up demo..."
     
     # Delete demo agents
-    kubectl delete -f agents/ --ignore-not-found=true
+    kubectl delete -f agents/concept-drift-detector/demo-deployment.yaml --ignore-not-found=true
+    kubectl delete -f agents/concept-drift-detector/demo-service.yaml --ignore-not-found=true
     
     # Delete monitoring
     kubectl delete -f k8s/monitoring/ --ignore-not-found=true
-    
-    # Delete OPA policies
-    kubectl delete -f policies/ --ignore-not-found=true
     
     # Delete ANS infrastructure
     kubectl delete -f k8s/ans-registry/ --ignore-not-found=true

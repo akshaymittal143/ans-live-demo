@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concept-drift-detector-demo
+  namespace: default
+  labels:
+    app.kubernetes.io/name: concept-drift-detector-demo
+    app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/version: 2.1.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: concept-drift-detector-demo
+      app.kubernetes.io/component: agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: concept-drift-detector-demo
+        app.kubernetes.io/component: agent
+        app.kubernetes.io/part-of: ans
+        app.kubernetes.io/version: 2.1.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: concept-drift-detector-demo
+        image: nginx:alpine
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ANS_DEMO_MODE
+          value: "true"
+        - name: AGENT_TYPE
+          value: "concept-drift-detector"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ans-registry-simple
+  namespace: ans-system
+  labels:
+    app.kubernetes.io/name: ans-registry-simple
+    app.kubernetes.io/component: registry
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/version: 1.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ans-registry-simple
+      app.kubernetes.io/component: registry
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ans-registry-simple
+        app.kubernetes.io/component: registry
+        app.kubernetes.io/part-of: ans
+        app.kubernetes.io/version: 1.0.0
+    spec:
+      serviceAccountName: ans-registry
+      containers:
+      - name: ans-registry-simple
+        image: nginx:alpine
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ANS_DEMO_MODE
+          value: "true"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi

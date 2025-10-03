@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: concept-drift-detector-demo
+  namespace: default
+  labels:
+    app.kubernetes.io/name: concept-drift-detector-demo
+    app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/version: 2.1.0
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: concept-drift-detector-demo
+    app.kubernetes.io/component: agent
