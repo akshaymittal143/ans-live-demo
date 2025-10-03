@@ -131,7 +131,7 @@ export class ConceptDriftDetector {
   private isDriftDetected(statisticalTests: any): boolean {
     // Drift is detected if any test has p-value < 0.05
     const threshold = 0.05;
-    return Object.values(statisticalTests).some((pValue: number) => pValue < threshold);
+    return Object.values(statisticalTests).some((pValue: unknown) => typeof pValue === 'number' && pValue < threshold);
   }
 
   private calculateSeverity(statisticalTests: any, current: any, baseline: any): 'low' | 'medium' | 'high' | 'critical' {

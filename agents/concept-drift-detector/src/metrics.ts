@@ -83,8 +83,17 @@ export class MetricsCollector {
     this.driftScore.set({ model_id: modelId, data_source: dataSource }, score);
   }
 
+  incrementCounter(name: string, labels?: Record<string, string>) {
+    // Generic counter increment method
+    if (name === 'drift_checks_total') {
+      this.driftDetectionCounter.inc(labels || {});
+    } else if (name === 'drift_detections_total') {
+      this.driftDetectionCounter.inc(labels || {});
+    }
+  }
+
   getMetrics(): string {
-    return register.metrics();
+    return register.metrics() as unknown as string;
   }
 
   getContentType(): string {

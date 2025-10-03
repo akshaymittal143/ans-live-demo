@@ -63,16 +63,16 @@ class ConceptDriftAgent {
         const { modelId, dataSource } = req.body;
         const result = await this.detector.detectDrift(modelId, dataSource);
         
-        this.metrics.incrementDriftChecks();
+        this.metrics.incrementCounter('drift_checks_total');
         if (result.driftDetected) {
-          this.metrics.incrementDriftDetections();
+          this.metrics.incrementCounter('drift_detections_total');
           await this.notifyDriftDetected(result);
         }
 
         res.json(result);
       } catch (error) {
         this.logger.error('Drift detection failed', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -84,7 +84,7 @@ class ConceptDriftAgent {
         res.json(history);
       } catch (error) {
         this.logger.error('Failed to get drift history', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
   }
@@ -191,9 +191,9 @@ class ConceptDriftAgent {
         for (const model of models) {
           const result = await this.detector.detectDrift(model.id, model.dataSource);
           
-          this.metrics.incrementDriftChecks();
+          this.metrics.incrementCounter('drift_checks_total');
           if (result.driftDetected) {
-            this.metrics.incrementDriftDetections();
+            this.metrics.incrementCounter('drift_detections_total');
             await this.notifyDriftDetected(result);
           }
         }

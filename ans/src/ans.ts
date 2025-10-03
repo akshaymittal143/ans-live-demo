@@ -178,7 +178,7 @@ export class AgentNamingService extends EventEmitter {
       return registration;
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to register agent: ${error.message}`);
+      throw new Error(`Failed to register agent: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -200,7 +200,7 @@ export class AgentNamingService extends EventEmitter {
       return response.data.metadata;
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to resolve agent: ${error.message}`);
+      throw new Error(`Failed to resolve agent: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -227,7 +227,7 @@ export class AgentNamingService extends EventEmitter {
       return response.data.agents;
     } catch (error) {
       this.emit('error', error);
-      throw new Error(`Failed to discover agents: ${error.message}`);
+      throw new Error(`Failed to discover agents: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

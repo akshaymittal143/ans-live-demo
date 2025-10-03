@@ -37,7 +37,7 @@ export class ANSServer {
       const token = authHeader.substring(7);
       const decoded = jwt.verify(token, this.registry.getCACertificate(), { algorithms: ['RS256'] }) as any;
       
-      req.user = decoded;
+      (req as any).user = decoded;
       next();
     } catch (error) {
       res.status(401).json({ error: 'Invalid token' });
@@ -60,7 +60,7 @@ export class ANSServer {
           ansName: registration.ansName 
         });
       } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -77,7 +77,7 @@ export class ANSServer {
 
         res.json({ metadata });
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -99,7 +99,7 @@ export class ANSServer {
         
         res.json({ agents });
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -110,7 +110,7 @@ export class ANSServer {
         const verified = await this.registry.verifyCapability(ansName, capability, proof);
         res.json({ verified });
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -127,7 +127,7 @@ export class ANSServer {
 
         res.json({ message: 'Agent removed successfully' });
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
@@ -144,7 +144,7 @@ export class ANSServer {
         const certificate = this.registry.issueCertificate(agentName, publicKey);
         res.json({ certificate });
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
       }
     });
 
