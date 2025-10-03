@@ -15,8 +15,8 @@ export interface RegistryConfig {
 export class ANSRegistry extends EventEmitter {
   private agents: Map<string, AgentRegistration> = new Map();
   private config: RegistryConfig;
-  private caCertificate: forge.pki.Certificate;
-  private caPrivateKey: forge.pki.PrivateKey;
+  private caCertificate!: forge.pki.Certificate;
+  private caPrivateKey!: forge.pki.PrivateKey;
 
   constructor(config: RegistryConfig) {
     super();
@@ -50,7 +50,7 @@ export class ANSRegistry extends EventEmitter {
 
     cert.setSubject(attrs);
     cert.setIssuer(attrs);
-    cert.sign(this.caPrivateKey);
+    cert.sign(this.caPrivateKey as forge.pki.rsa.PrivateKey);
 
     return cert;
   }
@@ -209,7 +209,7 @@ export class ANSRegistry extends EventEmitter {
       name: 'commonName',
       value: 'ANS Root CA'
     }]);
-    cert.sign(this.caPrivateKey);
+    cert.sign(this.caPrivateKey as forge.pki.rsa.PrivateKey);
 
     return forge.pki.certificateToPem(cert);
   }

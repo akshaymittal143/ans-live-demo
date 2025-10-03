@@ -23,6 +23,7 @@ This repository contains a complete, production-ready implementation of the Agen
 - [📚 Documentation](#-documentation)
 - [🤝 Contributing](#-contributing)
 - [⚡ Performance](#-performance)
+- [🧹 Cleanup](#-cleanup)
 - [📚 References](#-references)
 - [🙏 Acknowledgements](#-acknowledgements)
 - [📞 Contact](#-contact)
@@ -138,15 +139,15 @@ kubectl get pods -l app.kubernetes.io/name=concept-drift-detector-demo
 
 #### 3. Access the Demo
 ```bash
-# Port forward to access services
-kubectl port-forward svc/ans-registry 8080:80 -n ans-system
+# Port forward to access services (run in separate terminals)
+kubectl port-forward svc/ans-registry 8081:80 -n ans-system
 kubectl port-forward svc/grafana 3000:80 -n monitoring
 kubectl port-forward svc/prometheus 9090:9090 -n monitoring
-kubectl port-forward svc/concept-drift-detector-demo 8081:80
+kubectl port-forward svc/concept-drift-detector-demo 8082:80
 
 # Access URLs:
-# - ANS Registry: http://localhost:8080
-# - Demo Agent: http://localhost:8081
+# - ANS Registry: http://localhost:8081
+# - Demo Agent: http://localhost:8082
 # - Grafana: http://localhost:3000 (admin/admin)
 # - Prometheus: http://localhost:9090
 ```
@@ -555,6 +556,46 @@ Contributors will be recognized in:
 - **Load Balancing**: Intelligent request distribution
 - **Auto-scaling**: CPU and memory-based scaling
 - **Resource Optimization**: Efficient resource utilization
+
+## 🧹 Cleanup
+
+### Quick Cleanup
+```bash
+# Stop all port forwards (Ctrl+C in each terminal)
+# Then clean up resources
+./scripts/start-demo.sh cleanup
+```
+
+### Manual Cleanup (if script fails)
+```bash
+# 1. Stop all port forwarding processes
+pkill -f "kubectl port-forward"
+
+# 2. Delete demo deployments
+kubectl delete -f agents/concept-drift-detector/demo-deployment.yaml
+kubectl delete -f agents/concept-drift-detector/demo-service.yaml
+
+# 3. Delete ANS infrastructure
+kubectl delete -f k8s/ans-registry/simple-demo.yaml
+kubectl delete -f k8s/ans-registry/service.yaml
+kubectl delete -f k8s/ans-registry/rbac.yaml
+kubectl delete -f k8s/ans-registry/configmap.yaml
+kubectl delete -f k8s/ans-registry/namespace.yaml
+
+# 4. Delete monitoring stack
+kubectl delete -f k8s/monitoring/grafana/
+kubectl delete -f k8s/monitoring/prometheus/
+
+# 5. Verify cleanup
+kubectl get all --all-namespaces | grep -E "(ans-|monitoring)"
+```
+
+### Complete Reset
+```bash
+# If you want to start completely fresh
+minikube delete
+minikube start
+```
 
 ## 📚 References
 

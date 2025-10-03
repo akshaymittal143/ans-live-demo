@@ -88,10 +88,12 @@ deploy_opa_gatekeeper() {
     print_status "Waiting for OPA Gatekeeper to be ready..."
     kubectl wait --for=condition=ready --timeout=300s pod -l control-plane=controller-manager -n gatekeeper-system
     
-    # Deploy ANS policies
-    kubectl apply -f policies/
+    # Deploy ANS policies (skip for demo - policies are .rego files, not YAML)
+    # kubectl apply -f policies/  # This would fail because policies are .rego files
+    echo "ℹ️  OPA policies (.rego files) are available but not deployed in this demo"
+    echo "ℹ️  In production, these would be deployed as ConfigMaps or OPA CRDs"
     
-    print_success "OPA Gatekeeper deployed with ANS policies"
+    print_success "OPA Gatekeeper deployed (policies available but not deployed)"
 }
 
 # Function to deploy monitoring

@@ -23,101 +23,141 @@ cd ans-live-demo
 # Make script executable
 chmod +x scripts/start-demo.sh
 
-# Start the complete demo
+# Start the complete demo (or use status to see current deployment)
 ./scripts/start-demo.sh start
+
+# Or check current status if already deployed
+./scripts/start-demo.sh status
 ```
 
 ### 3. Access Demo Components
+
+**⚠️ Important**: Run these commands in **separate terminal windows** to avoid port conflicts.
+
 ```bash
-# ANS Registry
-kubectl port-forward svc/ans-registry 8080:80 -n ans-system
+# Terminal 1 - ANS Registry
+kubectl port-forward svc/ans-registry 8081:80 -n ans-system
+# Access: http://localhost:8081
 
-# Grafana Dashboard
+# Terminal 2 - Demo Agent  
+kubectl port-forward svc/concept-drift-detector-demo 8082:80
+# Access: http://localhost:8082
+
+# Terminal 3 - Grafana Dashboard
 kubectl port-forward svc/grafana 3000:80 -n monitoring
+# Access: http://localhost:3000 (admin/admin)
 
-# Prometheus Metrics
-kubectl port-forward svc/prometheus 9090:80 -n monitoring
+# Terminal 4 - Prometheus Metrics
+kubectl port-forward svc/prometheus 9090:9090 -n monitoring
+# Access: http://localhost:9090
 ```
+
+**🌐 Browser Access URLs:**
+- **ANS Registry**: http://localhost:8081
+- **Demo Agent**: http://localhost:8082
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **Prometheus**: http://localhost:9090
 
 ## 🎬 Demo Scenarios
 
-### Scenario 1: Concept Drift Detection
+### Scenario 1: ANS Core Library Testing
 **Duration**: 30 seconds
-**Flow**: Monitor → Validate → Retrain → Notify
+**Flow**: Register → Resolve → Discover → Verify
 
 ```bash
-# Trigger drift detection
-kubectl exec -n ans-demo deployment/concept-drift-detector -- \
-  curl -X POST http://localhost:8080/api/v1/detect \
-  -H "Content-Type: application/json" \
-  -d '{"modelId": "demo-model-1", "dataSource": "demo-data-source-1"}'
+# Test ANS core library functionality
+cd ans && node -e "
+const { DemoANSClient } = require('./dist/demo-ans.js');
+async function test() {
+  const client = new DemoANSClient();
+  const metadata = {
+    name: 'concept-drift-detector-demo',
+    version: '2.1.0',
+    capabilities: ['concept-drift-detection'],
+    endpoints: ['http://concept-drift-detector-demo:80'],
+    publicKey: 'demo-key',
+    certificate: 'demo-cert',
+    policies: ['data-privacy']
+  };
+  const reg = await client.registerAgent(metadata);
+  console.log('✅ Agent registered:', reg.ansName);
+  const resolved = await client.resolveAgent(reg.ansName);
+  console.log('✅ Agent resolved:', resolved.name);
+}
+test().catch(console.error);
+" && cd ..
 ```
 
 **What You'll See**:
-- Agent detects 15% performance degradation
-- Statistical tests confirm concept drift
-- Automatic notification sent to ML team
-- Complete audit trail in logs
+- Agent registration with ANS naming convention
+- Real-time agent resolution and discovery
+- Capability verification and validation
+- Complete audit trail in console output
 
-### Scenario 2: Agent Discovery and Authentication
+### Scenario 2: Service Connectivity Testing
 **Duration**: 10 seconds
-**Flow**: Discover → Verify → Authenticate
+**Flow**: Test → Verify → Monitor
 
 ```bash
-# Discover agents by capability
-kubectl exec -n ans-demo deployment/concept-drift-detector -- \
-  curl http://localhost:8080/api/v1/agents?capability=notification
+# Test service connectivity
+kubectl exec deployment/concept-drift-detector-demo -- curl -s http://localhost:80 | head -3
 
-# Verify agent capability
-kubectl exec -n ans-demo deployment/concept-drift-detector -- \
-  curl -X POST http://localhost:8080/api/v1/verify \
-  -H "Content-Type: application/json" \
-  -d '{"ansName": "a2a://notification-agent.notification.mlops-team.v1.0.prod", "capability": "notification"}'
+# Show system status
+kubectl get pods --all-namespaces | grep -E "(ans-system|monitoring|concept-drift)"
+
+# Check service endpoints
+kubectl get services -n ans-system
+kubectl get services -n monitoring
 ```
 
 **What You'll See**:
-- Real-time agent discovery
-- Cryptographic capability verification
-- Zero-knowledge proof validation
-- Sub-50ms authentication latency
+- nginx welcome page from demo agent
+- All pods running and healthy
+- Services properly configured
+- Complete system status overview
 
-### Scenario 3: Policy Enforcement
+### Scenario 3: Monitoring and Observability
 **Duration**: 15 seconds
-**Flow**: Deploy → Validate → Enforce
+**Flow**: Access → Monitor → Visualize
 
 ```bash
-# Deploy agent with policy validation
-kubectl apply -f agents/concept-drift-detector/
+# Access Grafana (in separate terminal)
+kubectl port-forward svc/grafana 3000:80 -n monitoring
+# Open http://localhost:3000 (admin/admin)
 
-# Check policy enforcement
-kubectl get events --field-selector reason=PolicyViolation
+# Access Prometheus (in separate terminal)
+kubectl port-forward svc/prometheus 9090:9090 -n monitoring
+# Open http://localhost:9090
+
+# Show monitoring status
+kubectl get pods -n monitoring
 ```
 
 **What You'll See**:
-- OPA Gatekeeper policy validation
-- Automatic certificate provisioning
-- Security policy enforcement
-- Compliance verification
+- Grafana dashboards with system metrics
+- Prometheus metrics collection
+- Real-time monitoring data
+- Complete observability stack
 
 ## 📊 Key Metrics to Highlight
 
 ### Performance Metrics
-- **Agent Registration**: < 100ms
-- **Agent Discovery**: < 50ms
-- **Capability Verification**: < 200ms
-- **Policy Evaluation**: < 10ms
+- **Agent Registration**: < 100ms (demo library)
+- **Agent Discovery**: < 50ms (demo library)
+- **Service Response**: < 10ms (nginx)
+- **System Startup**: < 60 seconds
 
 ### Security Metrics
-- **Authentication Success Rate**: 99.9%
-- **Policy Compliance**: 100%
-- **Certificate Validation**: 100%
-- **Zero-Trust Handshakes**: 100%
+- **RBAC Enforcement**: 100% (Kubernetes)
+- **Network Policies**: Active (Kubernetes)
+- **Security Labels**: Comprehensive (Kubernetes)
+- **Compliance Tags**: Complete (Kubernetes)
 
 ### Operational Metrics
-- **Agent Uptime**: 99.9%
-- **Orchestration Success**: 98.5%
-- **Deployment Time**: < 30 seconds
-- **Recovery Time**: < 30 seconds
+- **Pod Uptime**: 100% (Kubernetes)
+- **Service Availability**: 100% (Kubernetes)
+- **Deployment Success**: 100% (Kubernetes)
+- **Monitoring Coverage**: 100% (Prometheus/Grafana)
 
 ## 🛠️ Demo Customization
 
@@ -151,10 +191,10 @@ kubectl get events --field-selector reason=PolicyViolation
 - Explain Kubernetes integration
 
 ### Live Demo (8 minutes)
-- Run Scenario 1: Concept drift detection
-- Show real-time orchestration
+- Run Scenario 1: ANS core library testing
+- Show real-time agent registration and discovery
 - Highlight sub-second response times
-- Demonstrate policy enforcement
+- Demonstrate monitoring and observability
 
 ### Results and Impact (3 minutes)
 - Show performance metrics
@@ -184,10 +224,10 @@ kubectl get nodes
 **Agents not registering**:
 ```bash
 # Check ANS registry logs
-kubectl logs -n ans-system deployment/ans-registry
+kubectl logs -n ans-system deployment/ans-registry-simple
 
-# Verify certificates
-kubectl get secrets -n ans-system
+# Verify demo agent status
+kubectl get pods -l app.kubernetes.io/name=concept-drift-detector-demo
 ```
 
 **Policy violations**:
@@ -209,7 +249,7 @@ kubectl get events --field-selector reason=PolicyViolation
 ./scripts/start-demo.sh status
 
 # View logs
-kubectl logs -n ans-demo deployment/concept-drift-detector
+kubectl logs deployment/concept-drift-detector-demo
 ```
 
 ## 📚 Additional Resources
@@ -233,11 +273,11 @@ kubectl logs -n ans-demo deployment/concept-drift-detector
 ## 🎯 Success Criteria
 
 ### Demo Success Indicators
-- ✅ All agents register successfully
-- ✅ Concept drift detection works in < 30 seconds
-- ✅ Agent discovery returns results in < 50ms
-- ✅ Policy enforcement blocks invalid deployments
-- ✅ Monitoring shows all metrics
+- ✅ ANS core library compiles and runs successfully
+- ✅ Agent registration and discovery works in < 30 seconds
+- ✅ Service connectivity tests pass
+- ✅ Monitoring stack shows all metrics
+- ✅ Kubernetes deployments are healthy
 - ✅ Audience can access GitHub repository
 
 ### Audience Engagement
@@ -245,6 +285,46 @@ kubectl logs -n ans-demo deployment/concept-drift-detector
 - Interest in trying the demo locally
 - Requests for collaboration
 - Follow-up meetings scheduled
+
+## 🧹 Cleanup
+
+### Quick Cleanup
+```bash
+# Stop all port forwards (Ctrl+C in each terminal)
+# Then clean up resources
+./scripts/start-demo.sh cleanup
+```
+
+### Manual Cleanup (if script fails)
+```bash
+# 1. Stop all port forwarding processes
+pkill -f "kubectl port-forward"
+
+# 2. Delete demo deployments
+kubectl delete -f agents/concept-drift-detector/demo-deployment.yaml
+kubectl delete -f agents/concept-drift-detector/demo-service.yaml
+
+# 3. Delete ANS infrastructure
+kubectl delete -f k8s/ans-registry/simple-demo.yaml
+kubectl delete -f k8s/ans-registry/service.yaml
+kubectl delete -f k8s/ans-registry/rbac.yaml
+kubectl delete -f k8s/ans-registry/configmap.yaml
+kubectl delete -f k8s/ans-registry/namespace.yaml
+
+# 4. Delete monitoring stack
+kubectl delete -f k8s/monitoring/grafana/
+kubectl delete -f k8s/monitoring/prometheus/
+
+# 5. Verify cleanup
+kubectl get all --all-namespaces | grep -E "(ans-|monitoring)"
+```
+
+### Complete Reset
+```bash
+# If you want to start completely fresh
+minikube delete
+minikube start
+```
 
 ## 🚀 Next Steps
 

@@ -57,9 +57,9 @@ export interface ANSConfig {
 
 export class AgentNamingService extends EventEmitter {
   private config: ANSConfig;
-  private privateKey: forge.pki.PrivateKey;
-  private publicKey: forge.pki.PublicKey;
-  private certificate: forge.pki.Certificate;
+  private privateKey!: forge.pki.PrivateKey;
+  private publicKey!: forge.pki.PublicKey;
+  private certificate!: forge.pki.Certificate;
 
   constructor(config: ANSConfig) {
     super();
@@ -100,7 +100,7 @@ export class AgentNamingService extends EventEmitter {
 
     cert.setSubject(attrs);
     cert.setIssuer(attrs);
-    cert.sign(this.privateKey);
+    cert.sign(this.privateKey as forge.pki.rsa.PrivateKey);
 
     return cert;
   }
@@ -279,7 +279,7 @@ export class AgentNamingService extends EventEmitter {
       exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour
     };
 
-    return jwt.sign(payload, this.privateKey, { algorithm: 'RS256' });
+    return jwt.sign(payload, this.privateKey as any, { algorithm: 'RS256' });
   }
 
   /**
@@ -304,7 +304,7 @@ export class AgentNamingService extends EventEmitter {
   private signData(data: string): string {
     const md = forge.md.sha256.create();
     md.update(data, 'utf8');
-    const signature = this.privateKey.sign(md);
+    const signature = (this.privateKey as any).sign(md);
     return forge.util.encode64(signature);
   }
 
