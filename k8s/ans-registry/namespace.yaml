@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ans-system
+  labels:
+    name: ans-system
+    app.kubernetes.io/name: ans
+    app.kubernetes.io/instance: ans-system
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: system
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl

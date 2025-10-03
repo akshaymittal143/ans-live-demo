@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ans-registry
+  namespace: ans-system
+  labels:
+    app.kubernetes.io/name: ans-registry
+    app.kubernetes.io/instance: ans-registry
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: registry
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ans-registry
+      app.kubernetes.io/instance: ans-registry
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ans-registry
+        app.kubernetes.io/instance: ans-registry
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/component: registry
+        app.kubernetes.io/part-of: ans
+        app.kubernetes.io/managed-by: kubectl
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ans-registry
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: ans-registry
+        image: ans-registry:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ANS_CONFIG_PATH
+          value: "/etc/ans/config/config.yaml"
+        - name: ANS_CA_CERT_PATH
+          value: "/etc/ans/certs/ca.crt"
+        - name: ANS_SERVER_CERT_PATH
+          value: "/etc/ans/certs/server.crt"
+        - name: ANS_SERVER_KEY_PATH
+          value: "/etc/ans/certs/server.key"
+        - name: ANS_STORAGE_TYPE
+          value: "memory"
+        - name: ANS_LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: config
+          mountPath: /etc/ans/config
+          readOnly: true
+        - name: certs
+          mountPath: /etc/ans/certs
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: ans-registry-config
+      - name: certs
+        secret:
+          secretName: ans-registry-certs
+      - name: tmp
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - ans-registry
+              topologyKey: kubernetes.io/hostname

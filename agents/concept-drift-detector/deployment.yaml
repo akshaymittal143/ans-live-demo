@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concept-drift-detector
+  namespace: default
+  labels:
+    app.kubernetes.io/name: concept-drift-detector
+    app.kubernetes.io/instance: concept-drift-detector
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl
+    ans.agent/name: "concept-drift-detector"
+    ans.agent/capability: "concept-drift-detection"
+    ans.agent/provider: "research-lab"
+    ans.agent/version: "v2.1"
+    ans.agent/extension: "prod"
+    security.ans.io/clearance-level: "3"
+    data.ans.io/classification: "sensitive"
+    compliance.ans.io/hipaa: "false"
+  annotations:
+    security.ans.io/scan-enabled: "true"
+    security.ans.io/vulnerability-scan: "true"
+    security.ans.io/runtime-protection: "true"
+    security.ans.io/encryption-at-rest: "true"
+    security.ans.io/encryption-algorithm: "AES-256"
+    security.ans.io/tls-enabled: "true"
+    security.ans.io/tls-version: "1.3"
+    security.ans.io/mtls-enabled: "true"
+    security.ans.io/rbac-enabled: "true"
+    security.ans.io/least-privilege: "true"
+    security.ans.io/mfa-enabled: "true"
+    networking.ans.io/policy: "concept-drift-detector-netpol"
+    monitoring.ans.io/enabled: "true"
+    monitoring.ans.io/metrics-path: "/metrics"
+    monitoring.ans.io/health-check: "/health"
+    compliance.ans.io/audit-logging: "true"
+    compliance.ans.io/log-retention-days: "2555"
+    compliance.ans.io/data-retention-policy: "standard"
+    compliance.ans.io/data-handling-procedures: "standard"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: concept-drift-detector
+      app.kubernetes.io/instance: concept-drift-detector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: concept-drift-detector
+        app.kubernetes.io/instance: concept-drift-detector
+        app.kubernetes.io/version: "2.1.0"
+        app.kubernetes.io/component: agent
+        app.kubernetes.io/part-of: ans
+        app.kubernetes.io/managed-by: kubectl
+        ans.agent/name: "concept-drift-detector"
+        ans.agent/capability: "concept-drift-detection"
+        ans.agent/provider: "research-lab"
+        ans.agent/version: "v2.1"
+        ans.agent/extension: "prod"
+        security.ans.io/clearance-level: "3"
+        data.ans.io/classification: "sensitive"
+        compliance.ans.io/hipaa: "false"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: concept-drift-detector
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: concept-drift-detector
+        image: concept-drift-detector:2.1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ANS_REGISTRY_URL
+          value: "http://ans-registry.ans-system.svc.cluster.local"
+        - name: ANS_CA_CERT_PATH
+          value: "/etc/ans/certs/ca.crt"
+        - name: ANS_AGENT_CERT_PATH
+          value: "/etc/ans/certs/agent.crt"
+        - name: ANS_AGENT_KEY_PATH
+          value: "/etc/ans/certs/agent.key"
+        - name: AGENT_ENDPOINT
+          value: "https://concept-drift-detector.default.svc.cluster.local"
+        - name: PORT
+          value: "8080"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: certs
+          mountPath: /etc/ans/certs
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: certs
+        secret:
+          secretName: concept-drift-detector-certs
+      - name: tmp
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - concept-drift-detector
+              topologyKey: kubernetes.io/hostname

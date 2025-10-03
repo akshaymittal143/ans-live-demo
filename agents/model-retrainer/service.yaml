@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-retrainer
+  namespace: ans-demo
+  labels:
+    app.kubernetes.io/name: model-retrainer
+    app.kubernetes.io/instance: model-retrainer
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: model-retrainer
+    app.kubernetes.io/instance: model-retrainer

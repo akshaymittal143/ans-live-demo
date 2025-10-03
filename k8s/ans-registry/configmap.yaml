@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ans-registry-config
+  namespace: ans-system
+  labels:
+    app.kubernetes.io/name: ans-registry
+    app.kubernetes.io/instance: ans-registry
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/component: registry
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl
+data:
+  config.yaml: |
+    server:
+      port: 8080
+      host: "0.0.0.0"
+    
+    storage:
+      type: "memory"
+      etcd:
+        endpoints: ["etcd:2379"]
+      redis:
+        host: "redis:6379"
+        port: 6379
+    
+    security:
+      jwt:
+        algorithm: "RS256"
+        expiresIn: "1h"
+      
+      tls:
+        enabled: true
+        certFile: "/etc/ans/certs/server.crt"
+        keyFile: "/etc/ans/certs/server.key"
+        caFile: "/etc/ans/certs/ca.crt"
+    
+    logging:
+      level: "info"
+      format: "json"
+      output: "stdout"
+  
+  ans-naming-schema.json: |
+    {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": ["a2a", "mcp", "acp", "custom"]
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+$",
+          "minLength": 1,
+          "maxLength": 63
+        },
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+$",
+          "minLength": 1,
+          "maxLength": 63
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+$",
+          "minLength": 1,
+          "maxLength": 63
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[0-9]+(\\.[0-9]+)*$"
+        },
+        "extension": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+$",
+          "maxLength": 63
+        }
+      },
+      "required": ["protocol", "agentId", "capability", "provider", "version"]
+    }

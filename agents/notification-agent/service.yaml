@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-agent
+  namespace: ans-demo
+  labels:
+    app.kubernetes.io/name: notification-agent
+    app.kubernetes.io/instance: notification-agent
+    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/component: agent
+    app.kubernetes.io/part-of: ans
+    app.kubernetes.io/managed-by: kubectl
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: notification-agent
+    app.kubernetes.io/instance: notification-agent
