@@ -600,7 +600,7 @@ minikube start
 ## 📚 References
 
 ### Academic Papers
-1. **Mittal, A.** (2025). "Agent Name Service (ANS): A DNS-like Trust Layer for Secure AI Agent Deployments." *MLOps World Conference Proceedings*, Austin, Texas.
+1. **Mittal, A.** (2025). "Agent Name Service (ANS): A DNS-like Trust Layer for Secure AI Agent Deployments." *Technical Talk*, MLOps World Conference, Austin, Texas.
 
 2. **Chen, L., & Zhang, Y.** (2024). "Zero-Knowledge Proofs for Capability Verification in Distributed AI Systems." *IEEE Transactions on Information Forensics and Security*, 19(3), 1456-1470.
 
@@ -725,7 +725,7 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 - **🎥 Demo**: [Live Demo Video](https://youtube.com/watch?v=ans-demo)
 
 ### 🎓 Academic & Research
-- **📄 Paper**: [MLOps World 2025 Proceedings](https://mlops.world/2025/proceedings)
+- **📄 Talk**: [MLOps World 2025 Technical Talk](https://mlops.world/2025)
 - **🏛️ Institution**: University of the Cumberlands
 - **🔬 Research Area**: AI Security, MLOps, DevSecOps
 - **📊 Research Impact**: IEEE, ACM, and industry publications
@@ -745,7 +745,7 @@ If you find this project useful, please consider:
 
 [![Deploy to Kubernetes](https://img.shields.io/badge/Deploy%20to-Kubernetes-blue?logo=kubernetes)](./scripts/start-demo.sh)
 [![View Demo](https://img.shields.io/badge/View-Live%20Demo-green?logo=youtube)](https://youtube.com/watch?v=ans-demo)
-[![Read Paper](https://img.shields.io/badge/Read-Research%20Paper-red?logo=academia)](https://mlops.world/2025/proceedings)
+[![View Talk](https://img.shields.io/badge/View-Technical%20Talk-red?logo=academia)](https://mlops.world/2025)
 
 *Built with ❤️ for the MLOps community*
 
