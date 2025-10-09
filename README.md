@@ -88,6 +88,8 @@ code/
 
 ## 🚀 Quick Start
 
+> **🎥 Live Demo**: Watch the complete ANS implementation in action: [ANS Live Demo Video](https://cumber-my.sharepoint.com/:v:/g/personal/amittal18886_ucumberlands_edu/ESkpxI3WeqpEh1zsBLMdhxgBFVSuJdMqm3WY7l9YVRT6mw?e=5qM350){:target="_blank"}
+
 ### 📋 Prerequisites
 
 | Tool | Version | Purpose |

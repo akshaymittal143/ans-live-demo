@@ -1,5 +1,7 @@
 # 🚀 ANS Live Demo - MLOps World 2025
 
+> **🎥 Live Demo Recording**: [Watch the complete demo](https://cumber-my.sharepoint.com/:v:/g/personal/amittal18886_ucumberlands_edu/ESkpxI3WeqpEh1zsBLMdhxgBFVSuJdMqm3WY7l9YVRT6mw?e=5qM350){:target="_blank"}
+
 ## 🎯 What We're About to See
 
 **Agent Name Service (ANS)** - A DNS-like trust layer for secure, scalable AI agent deployments on Kubernetes.
