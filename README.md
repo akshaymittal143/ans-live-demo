@@ -111,6 +111,14 @@ cd ans-live-demo/code
 
 ### 🔧 Manual Setup (Step by Step)
 
+#### 0. Run Benchmarks and Reproducibility Scripts
+
+```bash
+# Run the benchmark harness and generate reproducibility artifacts
+python3 benchmarks/analyze.py
+python3 benchmarks/generate_outputs.py
+```
+
 #### 1. Deploy ANS Infrastructure
 ```bash
 # Deploy ANS registry (demo version)
