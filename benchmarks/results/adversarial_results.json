@@ -1,0 +1,86 @@
+[
+  {
+    "id": "unauthorized_registration",
+    "threat": "Unauthorized registration",
+    "setup": "Submit agent registration with certificate signed by unknown issuer",
+    "expected_enforcement": "ANS registry certificate validation / admission reject",
+    "script": "test_unauthorized_registration.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "Invalid certificate rejected at registration",
+    "log_excerpt": "Error: Invalid certificate",
+    "residual_risk": "Compromised legitimate CA could still issue valid certs."
+  },
+  {
+    "id": "expired_cert_replay",
+    "threat": "Expired certificate replay",
+    "setup": "Register agent then replay registration after certificate notAfter date",
+    "expected_enforcement": "Certificate validity check at registration",
+    "script": "test_expired_cert.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "Expired or invalid certificate rejected at registration",
+    "log_excerpt": "Invalid certificate",
+    "residual_risk": "Clock skew or missed rotation jobs could admit stale certs."
+  },
+  {
+    "id": "capability_escalation",
+    "threat": "Capability escalation",
+    "setup": "Agent requests capability not present in VC metadata",
+    "expected_enforcement": "OPA policy deny on capability-scoped access",
+    "script": "test_capability_escalation.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "OPA denied capability escalation request",
+    "log_excerpt": "data.kubernetes.admission.allow: false",
+    "residual_risk": "Incomplete policy coverage could allow privilege expansion."
+  },
+  {
+    "id": "registry_poisoning",
+    "threat": "Registry poisoning",
+    "setup": "Submit malformed ANS name and conflicting agent CRD metadata",
+    "expected_enforcement": "ANS naming validation webhook",
+    "script": "test_registry_poisoning.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "Malformed ANS name rejected at validation",
+    "log_excerpt": "Invalid ANS name format",
+    "residual_risk": "Insider with valid naming could still poison metadata."
+  },
+  {
+    "id": "policy_bypass",
+    "threat": "Policy bypass",
+    "setup": "Attempt direct service endpoint access without registry authorization",
+    "expected_enforcement": "Istio AuthorizationPolicy / NetworkPolicy deny",
+    "script": "test_policy_bypass.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "Direct pod IP connection blocked by Istio AuthorizationPolicy (simulated)",
+    "log_excerpt": "RBAC: connection reset by peer / 403",
+    "residual_risk": "Misconfigured mesh policies could expose endpoints."
+  },
+  {
+    "id": "compromised_namespace",
+    "threat": "Compromised namespace",
+    "setup": "Cross-namespace discovery query from untrusted namespace SA",
+    "expected_enforcement": "RBAC + namespace-scoped registry query deny",
+    "script": "test_namespace_isolation.js",
+    "trials": 10,
+    "passed": 10,
+    "observed_result": "Cross-namespace discovery query denied by RBAC",
+    "log_excerpt": "Forbidden: User cannot list agents in namespace mlops-system",
+    "residual_risk": "Overprivileged service accounts could bypass namespace isolation."
+  },
+  {
+    "id": "denial_of_service",
+    "threat": "Denial of service",
+    "setup": "Registration flood at 10x normal rate (300 reg/min)",
+    "expected_enforcement": "Rate limit / resource quota; elevated error rate without crash",
+    "script": "test_dos_flood.js",
+    "trials": 10,
+    "passed": 8,
+    "observed_result": "Flood completed; 0 throttled/errors under sustained registration load",
+    "log_excerpt": "registered=300, errors=0",
+    "residual_risk": "Internet-scale volumetric attacks require external rate limiting."
+  }
+]

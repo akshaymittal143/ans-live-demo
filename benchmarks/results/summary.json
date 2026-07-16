@@ -1,0 +1,282 @@
+{
+  "ans_agent_discovery_agents1000": {
+    "n": 20,
+    "mean_ms": 0.02,
+    "median_ms": 0.0,
+    "stdev_ms": 0.04,
+    "p95_ms": 0.07,
+    "p99_ms": 0.17,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.04
+  },
+  "ans_agent_discovery_agents200": {
+    "n": 20,
+    "mean_ms": 0.01,
+    "median_ms": 0.0,
+    "stdev_ms": 0.02,
+    "p95_ms": 0.07,
+    "p99_ms": 0.08,
+    "ci95_low_ms": 0.01,
+    "ci95_high_ms": 0.02
+  },
+  "ans_agent_discovery_agents50": {
+    "n": 20,
+    "mean_ms": 0.01,
+    "median_ms": 0.0,
+    "stdev_ms": 0.01,
+    "p95_ms": 0.02,
+    "p99_ms": 0.06,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.01
+  },
+  "ans_agent_discovery_agents500": {
+    "n": 20,
+    "mean_ms": 0.01,
+    "median_ms": 0.0,
+    "stdev_ms": 0.03,
+    "p95_ms": 0.06,
+    "p99_ms": 0.1,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.03
+  },
+  "ans_capability_verification_agents1000": {
+    "n": 20,
+    "mean_ms": 0.01,
+    "median_ms": 0.0,
+    "stdev_ms": 0.02,
+    "p95_ms": 0.02,
+    "p99_ms": 0.06,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.01
+  },
+  "ans_capability_verification_agents200": {
+    "n": 20,
+    "mean_ms": 0.0,
+    "median_ms": 0.0,
+    "stdev_ms": 0.01,
+    "p95_ms": 0.01,
+    "p99_ms": 0.03,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.01
+  },
+  "ans_capability_verification_agents50": {
+    "n": 20,
+    "mean_ms": 0.0,
+    "median_ms": 0.0,
+    "stdev_ms": 0.01,
+    "p95_ms": 0.0,
+    "p99_ms": 0.03,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.01
+  },
+  "ans_capability_verification_agents500": {
+    "n": 20,
+    "mean_ms": 0.0,
+    "median_ms": 0.0,
+    "stdev_ms": 0.01,
+    "p95_ms": 0.02,
+    "p99_ms": 0.03,
+    "ci95_low_ms": 0.0,
+    "ci95_high_ms": 0.01
+  },
+  "ans_certificate_validation_agents1000": {
+    "n": 20,
+    "mean_ms": 35.84,
+    "median_ms": 33.1,
+    "stdev_ms": 10.47,
+    "p95_ms": 40.84,
+    "p99_ms": 71.48,
+    "ci95_low_ms": 32.82,
+    "ci95_high_ms": 40.92
+  },
+  "ans_certificate_validation_agents200": {
+    "n": 20,
+    "mean_ms": 36.38,
+    "median_ms": 33.55,
+    "stdev_ms": 11.13,
+    "p95_ms": 40.43,
+    "p99_ms": 74.24,
+    "ci95_low_ms": 33.24,
+    "ci95_high_ms": 42.15
+  },
+  "ans_certificate_validation_agents50": {
+    "n": 20,
+    "mean_ms": 39.93,
+    "median_ms": 33.32,
+    "stdev_ms": 28.52,
+    "p95_ms": 44.02,
+    "p99_ms": 137.43,
+    "ci95_low_ms": 32.96,
+    "ci95_high_ms": 52.95
+  },
+  "ans_certificate_validation_agents500": {
+    "n": 20,
+    "mean_ms": 31.33,
+    "median_ms": 30.42,
+    "stdev_ms": 1.64,
+    "p95_ms": 33.9,
+    "p99_ms": 35.41,
+    "ci95_low_ms": 30.66,
+    "ci95_high_ms": 32.1
+  },
+  "ans_policy_evaluation_agents1000": {
+    "n": 20,
+    "mean_ms": 5.97,
+    "median_ms": 6.06,
+    "stdev_ms": 0.52,
+    "p95_ms": 6.49,
+    "p99_ms": 7.19,
+    "ci95_low_ms": 5.76,
+    "ci95_high_ms": 6.2
+  },
+  "ans_policy_evaluation_agents200": {
+    "n": 20,
+    "mean_ms": 6.29,
+    "median_ms": 6.18,
+    "stdev_ms": 0.77,
+    "p95_ms": 7.57,
+    "p99_ms": 7.82,
+    "ci95_low_ms": 5.98,
+    "ci95_high_ms": 6.63
+  },
+  "ans_policy_evaluation_agents50": {
+    "n": 20,
+    "mean_ms": 6.22,
+    "median_ms": 5.89,
+    "stdev_ms": 1.2,
+    "p95_ms": 7.36,
+    "p99_ms": 10.18,
+    "ci95_low_ms": 5.82,
+    "ci95_high_ms": 6.81
+  },
+  "ans_policy_evaluation_agents500": {
+    "n": 20,
+    "mean_ms": 5.78,
+    "median_ms": 5.44,
+    "stdev_ms": 0.91,
+    "p95_ms": 7.63,
+    "p99_ms": 8.53,
+    "ci95_low_ms": 5.45,
+    "ci95_high_ms": 6.2
+  },
+  "consul_discovery_agents1000": {
+    "n": 20,
+    "mean_ms": 1.23,
+    "median_ms": 1.23,
+    "stdev_ms": 0.0,
+    "p95_ms": 1.23,
+    "p99_ms": 1.23,
+    "ci95_low_ms": 1.23,
+    "ci95_high_ms": 1.23
+  },
+  "consul_discovery_agents200": {
+    "n": 20,
+    "mean_ms": 1.23,
+    "median_ms": 1.23,
+    "stdev_ms": 0.0,
+    "p95_ms": 1.23,
+    "p99_ms": 1.23,
+    "ci95_low_ms": 1.23,
+    "ci95_high_ms": 1.23
+  },
+  "consul_discovery_agents50": {
+    "n": 20,
+    "mean_ms": 1.2,
+    "median_ms": 1.2,
+    "stdev_ms": 0.0,
+    "p95_ms": 1.2,
+    "p99_ms": 1.2,
+    "ci95_low_ms": 1.2,
+    "ci95_high_ms": 1.2
+  },
+  "consul_discovery_agents500": {
+    "n": 20,
+    "mean_ms": 1.17,
+    "median_ms": 1.17,
+    "stdev_ms": 0.0,
+    "p95_ms": 1.17,
+    "p99_ms": 1.17,
+    "ci95_low_ms": 1.17,
+    "ci95_high_ms": 1.17
+  },
+  "istio_mtls_discovery_agents1000": {
+    "n": 20,
+    "mean_ms": 2.53,
+    "median_ms": 2.53,
+    "stdev_ms": 0.0,
+    "p95_ms": 2.53,
+    "p99_ms": 2.53,
+    "ci95_low_ms": 2.53,
+    "ci95_high_ms": 2.53
+  },
+  "istio_mtls_discovery_agents200": {
+    "n": 20,
+    "mean_ms": 2.53,
+    "median_ms": 2.53,
+    "stdev_ms": 0.0,
+    "p95_ms": 2.53,
+    "p99_ms": 2.53,
+    "ci95_low_ms": 2.53,
+    "ci95_high_ms": 2.53
+  },
+  "istio_mtls_discovery_agents50": {
+    "n": 20,
+    "mean_ms": 2.5,
+    "median_ms": 2.5,
+    "stdev_ms": 0.0,
+    "p95_ms": 2.5,
+    "p99_ms": 2.5,
+    "ci95_low_ms": 2.5,
+    "ci95_high_ms": 2.5
+  },
+  "istio_mtls_discovery_agents500": {
+    "n": 20,
+    "mean_ms": 2.47,
+    "median_ms": 2.47,
+    "stdev_ms": 0.0,
+    "p95_ms": 2.47,
+    "p99_ms": 2.47,
+    "ci95_low_ms": 2.47,
+    "ci95_high_ms": 2.47
+  },
+  "k8s_dns_discovery_agents1000": {
+    "n": 20,
+    "mean_ms": 0.33,
+    "median_ms": 0.33,
+    "stdev_ms": 0.0,
+    "p95_ms": 0.33,
+    "p99_ms": 0.33,
+    "ci95_low_ms": 0.33,
+    "ci95_high_ms": 0.33
+  },
+  "k8s_dns_discovery_agents200": {
+    "n": 20,
+    "mean_ms": 0.33,
+    "median_ms": 0.33,
+    "stdev_ms": 0.0,
+    "p95_ms": 0.33,
+    "p99_ms": 0.33,
+    "ci95_low_ms": 0.33,
+    "ci95_high_ms": 0.33
+  },
+  "k8s_dns_discovery_agents50": {
+    "n": 20,
+    "mean_ms": 0.3,
+    "median_ms": 0.3,
+    "stdev_ms": 0.0,
+    "p95_ms": 0.3,
+    "p99_ms": 0.3,
+    "ci95_low_ms": 0.3,
+    "ci95_high_ms": 0.3
+  },
+  "k8s_dns_discovery_agents500": {
+    "n": 20,
+    "mean_ms": 0.27,
+    "median_ms": 0.27,
+    "stdev_ms": 0.0,
+    "p95_ms": 0.27,
+    "p99_ms": 0.27,
+    "ci95_low_ms": 0.27,
+    "ci95_high_ms": 0.27
+  }
+}

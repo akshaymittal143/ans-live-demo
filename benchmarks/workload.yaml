@@ -1,0 +1,46 @@
+# ANS benchmark workload specification (revision study)
+# Used by run_trials.py and documented in manuscript Section V.B.1
+
+name: ans-revision-workload-v1
+trials_per_config: 100
+confidence_level: 0.95
+
+agent_counts: [50, 200, 500, 1000]
+
+traffic_model:
+  type: open
+  registration_rate_per_min: 30
+  discovery_qps: 25
+  policy_eval_triggers_per_min: 120
+  cert_validation_cadence_per_hour: 6
+
+protocol_mix:
+  a2a: 0.45
+  mcp: 0.35
+  acp: 0.20
+
+payload:
+  registration_bytes: 2048
+  discovery_query_bytes: 512
+  capability_proof_bytes: 1024
+
+stress_scenarios:
+  burst_registration:
+    agents: 100
+    window_seconds: 60
+  discovery_storm:
+    qps: 50
+    duration_minutes: 10
+
+operations:
+  - agent_registration
+  - agent_discovery
+  - capability_verification
+  - policy_evaluation
+  - certificate_validation
+
+baselines:
+  - ans_full
+  - k8s_dns
+  - istio_mtls
+  - consul

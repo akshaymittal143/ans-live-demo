@@ -1,0 +1,30 @@
+{
+  "key": "ans_agent_registration_agents1000",
+  "samples_ms": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "meta": {
+    "agent_count": 1000,
+    "trials": 20,
+    "timestamp": 1783888975927
+  }
+}

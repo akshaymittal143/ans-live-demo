@@ -1,0 +1,22 @@
+{
+  "ans_full": {
+    "cpu_pct": 12.4,
+    "memory_mb": 384,
+    "network_kb_per_req": 1.2
+  },
+  "k8s_dns": {
+    "cpu_pct": 2.1,
+    "memory_mb": 64,
+    "network_kb_per_req": 0.4
+  },
+  "istio_mtls": {
+    "cpu_pct": 8.7,
+    "memory_mb": 256,
+    "network_kb_per_req": 1.8
+  },
+  "consul": {
+    "cpu_pct": 6.3,
+    "memory_mb": 192,
+    "network_kb_per_req": 1.1
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "request": {
+    "kind": {
+      "kind": "Deployment"
+    },
+    "operation": "CREATE",
+    "object": {
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/part-of": "ans",
+          "app.kubernetes.io/component": "agent"
+        },
+        "annotations": {
+          "networking.ans.io/policy": "default-deny",
+          "security.ans.io/clearance": "2",
+          "monitoring.ans.io/enabled": "true",
+          "monitoring.ans.io/scrape": "true"
+        }
+      },
+      "spec": {
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/part-of": "ans"
+            },
+            "annotations": {
+              "capability.ans.io/restricted": "ml-inference"
+            }
+          }
+        }
+      }
+    }
+  }
+}
